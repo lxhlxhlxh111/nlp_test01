@@ -1,0 +1,12 @@
+chat_service.py展示如何使用FastAPI搭建Web APIs。运行方法如下：
+cd services
+uvicorn chat_service:app --reload
+
+chat_service_test.py是如何使用chat_service.py的例子。
+
+如何使用聊天演示项目：
+python app.py或gradio app.py（热更新）
+
+.env文件把这两个Key填上：
+OPENAI_API_KEY=
+OPENAI_ORGANIZATION_ID=
