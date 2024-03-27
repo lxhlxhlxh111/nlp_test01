@@ -39,7 +39,7 @@
             userMessageDiv.textContent = 'User: ' + userInput;
             chatContainer.appendChild(userMessageDiv);
 
-            fetch('http://127.0.0.1:5000/chat', {
+            fetch('http://127.0.0.1:5003/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -82,12 +82,63 @@
         });
 
         // 将对话记录转换为字符串
-        var conversation = messages.join('\n');
+        // var conversation = messages.join('\n');
+        // console.log(messages)
 
-        // 保存对话记录到本地或发送给服务器保存的逻辑
-        // 这里只是简单地在控制台打印对话记录
-        console.log(conversation);
+        messages2=["AI: Hello there! How can I assist you today?","user: 1","AI: Hello there! How can I assist you today?","user: 2","AI: Hello there! How can I assist you today?","user: 3","AI: Hello there! How can I assist you today?","user: 4","AI: Hello there! How can I assist you today?","user: 5"]
+
+        var userid = "{{ user_id }}"; // 从服务器端获取的用户ID
+        var name="{{name}}"
+
+        var now = new Date();
+        var year = now.getFullYear(); // 获取年份
+        var month = now.getMonth() + 1; // 获取月份（注意要加1，因为月份是从0开始的）
+        var day = now.getDate(); // 获取日期
+        var hours = now.getHours(); // 获取小时
+        var minutes = now.getMinutes(); // 获取分钟
+        var formattedTime = year + "-" + month + "-" + day + " " + hours + ":" + minutes;
+
+        var result = [];
+        for (var i = 0; i < messages2.length; i++) {
+            var message = messages2[i];
+            var sender = "";
+            var messageType = message.substring(0, 4);
+
+            // 根据消息类型确定发送者
+            if (messageType === "AI: ") {
+                sender = "AI";
+            } else if (messageType === "user") {
+                sender = userid;
+            }
+
+            // 构造消息对象并添加到结果数组中
+            if (sender !== "") {
+                var messageContent = message.substring(message.indexOf(":") + 2); // 获取冒号后面的消息内容
+                // console.log(messageContent)
+                var messageObject = {
+                    "timestamp": formattedTime,
+                    "sender": sender,
+                    "message": messageContent
+                };
+                result.push(messageObject);
+            }
+        }
+
+        // console.log(result);
+        // 将 result 数组转换为 JSON 字符串
+        var jsonString = JSON.stringify(result, null, 2);
+
+        // 创建一个 Blob 对象
+        var blob = new Blob([jsonString], { type: 'application/json' });
+
+        // 创建一个下载链接
+        var downloadLink = document.createElement('a');
+        downloadLink.href = window.URL.createObjectURL(blob);
+        downloadLink.download = name +'.json'; // 文件名为 name.json
+        downloadLink.click();
         
+
+
         }
 
     

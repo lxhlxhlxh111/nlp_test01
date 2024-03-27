@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, g, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, g, request, jsonify, redirect, url_for, session
+
 
 import openai
 import sqlite3
@@ -13,6 +14,8 @@ openai.api_key = api_key
 # 用于保存对话历史的全局变量
 conversation_history = []
 system_message_added = False  # Flag to check if system message has been added
+#session密钥
+app.secret_key = 'Cxh12300'
 
 
 def get_db():
@@ -69,10 +72,15 @@ def getLoginRequest():
         
         sql = "SELECT * FROM user WHERE user=? AND password=?"
         cursor.execute(sql, (username, password))
-        results = cursor.fetchall()
-
-        if len(results) == 1:
-            return render_template('index.html')
+        user = cursor.fetchone()
+        print("user",user)
+        if user:
+            # 将用户信息保存到 session 中
+            name = user[0]
+            user_id = user[2]
+            # print(name)
+            # print(user_id)
+            return render_template('index.html',name=name, user_id=user_id)
         else:
             return '用户名或密码不正确'
     except Exception as e:
