@@ -71,7 +71,15 @@
         border-radius: 20px;
         cursor: pointer;
     }
-
+    #save-button {
+        padding: 8px 20px;
+        border: none;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 20px;
+        cursor: pointer;
+        margin-left: 20px;
+    }
     #input-container:focus-within ~ #chat-container {
     margin-bottom: 160px; /* 调整下边距 */
 }

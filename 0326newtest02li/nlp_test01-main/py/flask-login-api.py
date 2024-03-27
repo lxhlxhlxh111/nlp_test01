@@ -1,21 +1,81 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, g, request, jsonify
 import openai
 import sqlite3
-from flask_cors import CORS
+import traceback
+app = Flask(__name__, static_url_path='/static')
 
-app = Flask(__name__)
-CORS(app, resources=r'*')
-
-conn = sqlite3.connect('chat1.db')
-cursor = conn.cursor()
-
+DATABASE = 'users.db'
 with open('./key.txt', 'r') as file:
     api_key = file.read().strip()
 openai.api_key = api_key
-
+# print("api_key",api_key)
 # 用于保存对话历史的全局变量
 conversation_history = []
 system_message_added = False  # Flag to check if system message has been added
+
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+@app.route('/')
+def login():
+    return render_template('login.html')
+
+@app.route('/regist')
+def regist():
+    return render_template('regist.html')
+
+@app.route('/registuser', methods=['GET', 'POST'])
+def getRigistRequest():
+    try:
+        if request.method == 'POST':
+            username = request.form.get('user')
+            password = request.form.get('password')
+
+            conn = get_db()
+            cursor = conn.cursor()
+            
+            sql = "INSERT INTO user(user, password) VALUES (?, ?)"
+            cursor.execute(sql, (username, password))
+            
+            conn.commit()
+            
+            return render_template('login.html')
+        else:
+            return '不支持的请求方法'
+    except Exception as e:
+        traceback.print_exc()
+        return '注册失败'
+
+@app.route('/login', methods=['POST'])
+def getLoginRequest():
+    try:
+        username = request.form.get('user')
+        password = request.form.get('password')
+
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        sql = "SELECT * FROM user WHERE user=? AND password=?"
+        cursor.execute(sql, (username, password))
+        results = cursor.fetchall()
+
+        if len(results) == 1:
+            return render_template('index.html')
+        else:
+            return '用户名或密码不正确'
+    except Exception as e:
+        traceback.print_exc()
+        return '登录失败'
 
 
 @app.route('/chat', methods=['POST'])
@@ -59,5 +119,5 @@ def chat():
     return jsonify({"reply": reply})
     # return conversation_history
 
-if __name__ == "__main__":
-    app.run(port=5003, debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)

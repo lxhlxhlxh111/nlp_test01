@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with AI</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../static/styles.css">
 
     <style>
         #user-input {
@@ -20,6 +20,8 @@
     <div id="input-container">
         <input type="text" id="user-input" placeholder="Your message..." onkeypress="handleKeyPress(event)">
         <button id="send-button" onclick="sendMessage()">Send</button>
+        <button id="save-button" onclick="saveConversation()">Save</button>
+
     </div>
 
        <script>
@@ -37,7 +39,7 @@
             userMessageDiv.textContent = 'User: ' + userInput;
             chatContainer.appendChild(userMessageDiv);
 
-            fetch('http://127.0.0.1:5003/chat', {
+            fetch('http://127.0.0.1:5000/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -70,6 +72,27 @@
                 input.selectionStart = input.selectionEnd = start + 1; // 将光标移动到换行符后
             }
         }
+        function saveConversation() {
+        var chatContainer = document.getElementById('chat-container');
+        var messages = [];
+
+        // 遍历聊天容器中的所有消息，并将其保存到数组中
+        chatContainer.querySelectorAll('.message').forEach(message => {
+            messages.push(message.textContent);
+        });
+
+        // 将对话记录转换为字符串
+        var conversation = messages.join('\n');
+
+        // 保存对话记录到本地或发送给服务器保存的逻辑
+        // 这里只是简单地在控制台打印对话记录
+        console.log(conversation);
+        
+        }
+
+    
+    
+    
     </script>
 
 </body>
