@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, g, request, jsonify
+from flask import Flask, render_template, request, g, request, jsonify, redirect, url_for
+
 import openai
 import sqlite3
 import traceback
@@ -49,7 +50,7 @@ def getRigistRequest():
             
             conn.commit()
             
-            return render_template('login.html')
+            return  redirect(url_for('login'))
         else:
             # return '不支持的请求方法'
             return render_template('login.html')
