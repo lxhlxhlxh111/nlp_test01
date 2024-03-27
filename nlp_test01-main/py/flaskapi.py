@@ -18,7 +18,6 @@ conversation_history = []
 system_message_added = False  # Flag to check if system message has been added
 
 
-
 @app.route('/chat', methods=['POST'])
 def chat():
     global conversation_history
