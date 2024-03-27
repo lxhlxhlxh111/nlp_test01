@@ -1,0 +1,50 @@
+def extract_stream_json(chat_history):
+    dialogue = ""
+    for turn in chat_history:
+        user_content, assistant_content = turn
+        dialogue +=\
+        f"""user: {user_content}
+assistant: {assistant_content}
+"""
+        
+    print(dialogue)
+    dialogue = dialogue.strip()
+    instruction = instruction_extract_json_template.format(dialogue=dialogue)
+    instruction = instruction.strip()
+    print(instruction)
+    
+    messages = []
+    sys_msg = create_system_message(instruction)
+    messages.append(sys_msg)
+
+    print(messages)
+
+    stream = client.chat.completions.create(
+        model="gpt-3.5-turbo-1106",
+        messages=messages,
+        temperature=0,
+        stream=True
+    )
+
+    # accumulated text
+    acc_text = ""
+    # Streaming the tokens
+    for chunk in stream:
+        # print(chunk.choices[0].delta.content or "", end="")
+        text_delta = chunk.choices[0].delta.content or ""
+
+        acc_text += text_delta
+        yield acc_text, "{}", "", ""
+
+    print(acc_text)
+    try:
+        json_object = json.loads(acc_text)
+    except ValueError as e:
+        print(e)
+        yield acc_text, "{}", "", ""
+        raise gr.Error("Not a valid JSON string!")
+
+    personality = json_object['personality']
+    facts = json_object['facts']
+
+    yield acc_text, json_object, personality, facts
