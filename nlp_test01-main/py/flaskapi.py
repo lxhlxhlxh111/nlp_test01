@@ -9,14 +9,13 @@ CORS(app, resources=r'*')
 conn = sqlite3.connect('chat1.db')
 cursor = conn.cursor()
 
-with open('../key.txt', 'r') as file:
+with open('./key.txt', 'r') as file:
     api_key = file.read().strip()
 openai.api_key = api_key
 
 # 用于保存对话历史的全局变量
 conversation_history = []
 system_message_added = False  # Flag to check if system message has been added
-
 
 
 @app.route('/chat', methods=['POST'])
