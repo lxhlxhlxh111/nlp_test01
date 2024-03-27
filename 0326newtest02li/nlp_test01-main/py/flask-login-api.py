@@ -34,7 +34,7 @@ def login():
 def regist():
     return render_template('regist.html')
 
-@app.route('/registuser', methods=['GET', 'POST'])
+@app.route('/registuser', methods=['POST'])
 def getRigistRequest():
     try:
         if request.method == 'POST':
@@ -51,7 +51,8 @@ def getRigistRequest():
             
             return render_template('login.html')
         else:
-            return '不支持的请求方法'
+            # return '不支持的请求方法'
+            return render_template('login.html')
     except Exception as e:
         traceback.print_exc()
         return '注册失败'
@@ -120,4 +121,4 @@ def chat():
     # return conversation_history
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,port=5003)

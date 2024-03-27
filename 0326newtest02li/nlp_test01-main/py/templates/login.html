@@ -102,7 +102,7 @@
 </head>
 
 <body>
-    <form method="post" action='/login'>
+    <form method="post" action='/login' autocomplete="off">
         <p>用户名<br />
             <input type="text" class="textinput"  name="user" value="">
         </p>
@@ -115,7 +115,14 @@
 
 
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    document.querySelector("form").addEventListener("submit", function(event) {
+        event.preventDefault(); // 阻止表单默认提交行为
+    });
+});
 
+</script>
 </html>
 
 
